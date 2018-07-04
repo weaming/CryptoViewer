@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'marketcap.dart';
+import 'background.dart';
 
 final biggerFont = const TextStyle(
   fontSize: 18.0,
@@ -41,13 +43,19 @@ const categories = [
 
 
 Widget renderTickers(List<dynamic> json) {
-  return new ListView.builder(
-    itemCount: json.length,
+  var top = json[0];
+  var listings = json[1];
+
+  return new GridView.builder(
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+    itemCount: top.length,
     itemBuilder: (context, index) {
-      final item = json[index];
-      var p1 = "\$ ${item['price_usd']}";
-      var p2 = "฿ ${item['price_btc']}";
-      var p3 = "¥ ${item['price_cny']}";
+      final item = top[index];
+      var p1 = "\$ ${double.parse(item['price_usd']).toStringAsFixed(2)}";
+      var p2 = "฿ ${double.parse(item['price_btc']).toStringAsFixed(6)}";
+      var p3 = "¥ ${double.parse(item['price_cny']).toStringAsFixed(2)}";
+      var id = findIDBySymbol(listings, item['symbol']);
+      var logoUrl = 'https://s2.coinmarketcap.com/static/img/coins/128x128/$id.png';
 
       return GestureDetector(
         onTap: () {
@@ -59,18 +67,32 @@ Widget renderTickers(List<dynamic> json) {
           ));
         },
         child: Card(
-          child: ListTile(
-            title: new Text(
-              '${item['rank']} ${item['symbol']}',
-              style: biggerFont,
+          margin: EdgeInsets.all(6.0),
+          child: Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  colorFilter: new ColorFilter.mode(Colors.white.withOpacity(0.2), BlendMode.dstATop),
+                  image: NetworkImage(logoUrl),
+                )
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(p1),
-                Text(p2),
-                Text(p3),
-              ],
+            child: ListTile(
+              title: Row(
+                children: <Widget>[
+                  Text(
+                    '${item['rank']} ${item['symbol']}',
+                    style: biggerFont,
+                  ),
+                ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(p1),
+                  Text(p2),
+                  Text(p3),
+                ],
+              ),
             ),
           ),
         ),
@@ -156,8 +178,9 @@ Widget renderItem(dynamic item, BuildContext context) {
         tiles: categories.map((x) => _renderCell(x)).toList(),
       ).toList(),
     ),
-    margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 5.0),
+    margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
   );
+
   return GestureDetector(
       onTap: () {
         Navigator.pop(context);

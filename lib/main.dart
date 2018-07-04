@@ -1,23 +1,33 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'marketcap.dart';
 import 'data_process.dart';
 import 'background.dart';
 
-void main() => runApp(new App());
+void main() => runApp(App());
 
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'CoinMarketCap',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text('CoinMarketCap'),
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('CoinMarketCap'),
+            bottom: TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.info_outline)),
+                Tab(icon: Icon(Icons.format_list_bulleted)),
+              ],
+            ),
+          ),
+          body: BaseLayout(),
         ),
-        body: new BaseLayout(),
       ),
     );
   }
@@ -26,39 +36,30 @@ class App extends StatelessWidget {
 class BaseLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new Container(
-          decoration: new BoxDecoration(
+    return Scaffold(
+      body: Container(
+          decoration: BoxDecoration(
             image: buildBackground("images/girl.jpg")
           ),
-          child: new MainLayout(),
+          child: MainLayout(),
       ),
     );
   }
 }
 
-class MainLayout extends StatefulWidget {
-  @override
-  _MainState createState() => _MainState();
-}
-
-class _MainState extends State<MainLayout> {
-  var _needRefresh = false;
-
-  void _toggleNeedFresh() {
-    setState(() {
-      _needRefresh = !_needRefresh;
-    });
+class MainLayout extends StatelessWidget {
+  Future<dynamic> _fetchInfoAndListings(n) async {
+    var top = await fetchTop(n);
+    var listings = await fetchListings();
+    return [top, listings];
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<dynamic>(
-      future: fetchTop(20),
+    var tickerList = FutureBuilder<dynamic>(
+      future: _fetchInfoAndListings(120),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          // http ok
-          _needRefresh = false;
           return TickersList(snapshot.data);
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
@@ -66,6 +67,13 @@ class _MainState extends State<MainLayout> {
 
         return CircularProgressIndicator();
       },
+    );
+
+    return TabBarView(
+      children: <Widget>[
+        tickerList,
+        Text(''),
+      ],
     );
   }
 }
@@ -84,4 +92,26 @@ class TickersList extends StatelessWidget {
       child: rv,
     );
   }
+}
+
+Widget buildListings() {
+  return FutureBuilder<dynamic>(
+    future: fetchListings(),
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        var data = snapshot.data;
+        return GridView(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+          children: data.map<Widget>((Coin item) => Card(
+            child: ListTile(
+              title: Text('${item.id}'),
+              subtitle: Text('${item.symbol}'),
+            ),
+          )).toList(),
+        );
+      }
+
+      return CircularProgressIndicator();
+    },
+  );
 }

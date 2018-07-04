@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 DecorationImage buildBackground(String image) {
-  return new DecorationImage(
+  return DecorationImage(
     image: new AssetImage(image),
     fit: BoxFit.cover,
   );

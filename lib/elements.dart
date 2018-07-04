@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 
-Column buildButtonColumn(BuildContext context, IconData icon, String label) {
-  Color color = Theme.of(context).primaryColor;
-
-  return new Column(
+Widget buildButton(IconData icon, String label, {Color color=Colors.blue}) {
+  return Row(
     mainAxisSize: MainAxisSize.min,
     mainAxisAlignment: MainAxisAlignment.center,
     children: <Widget>[
-      new Icon(
+      Icon(
         icon,
         color: color,
       ),
-      new Container(
+      Container(
         margin: const EdgeInsets.only(top: 8.0),
         child: new Text(
           label,
@@ -26,14 +24,3 @@ Column buildButtonColumn(BuildContext context, IconData icon, String label) {
   );
 }
 
-Widget buildButtons(BuildContext context,) {
-  return new Container(
-    child: new Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        buildButtonColumn(context, Icons.cached, '刷新'),
-        buildButtonColumn(context, Icons.share, '分享'),
-      ],
-    ),
-  );
-}
