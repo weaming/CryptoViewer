@@ -5,6 +5,24 @@ import 'background.dart';
 
 void main() => runApp(new App());
 
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'CoinMarketCap',
+      theme: new ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: new Scaffold(
+        appBar: new AppBar(
+          title: new Text('CoinMarketCap'),
+        ),
+        body: new BaseLayout(),
+      ),
+    );
+  }
+}
+
 class BaseLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -41,12 +59,7 @@ class _MainState extends State<MainLayout> {
         if (snapshot.hasData) {
           // http ok
           _needRefresh = false;
-
-          var rv = renderTickers(snapshot.data);
-          return Hero(
-            tag: 'detail',
-            child: rv,
-          );
+          return TickersList(snapshot.data);
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }
@@ -57,20 +70,18 @@ class _MainState extends State<MainLayout> {
   }
 }
 
-class App extends StatelessWidget {
+
+class TickersList extends StatelessWidget {
+  final data;
+
+  TickersList(this.data);
+
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'CoinMarketCap',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text('CoinMarketCap'),
-        ),
-        body: new BaseLayout(),
-      ),
+    var rv = renderTickers(data);
+    return Hero(
+      tag: 'detail',
+      child: rv,
     );
   }
 }
