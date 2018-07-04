@@ -57,7 +57,7 @@ class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var tickerList = FutureBuilder<dynamic>(
-      future: _fetchInfoAndListings(120),
+      future: _fetchInfoAndListings(300),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return TickersList(snapshot.data);
@@ -65,7 +65,7 @@ class MainLayout extends StatelessWidget {
           return Text("${snapshot.error}");
         }
 
-        return CircularProgressIndicator();
+        return Text('');
       },
     );
 
