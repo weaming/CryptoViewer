@@ -35,7 +35,6 @@ class _MainState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
-    print('building');
     return FutureBuilder<dynamic>(
       future: fetchTop(20),
       builder: (context, snapshot) {
@@ -43,17 +42,11 @@ class _MainState extends State<MainLayout> {
           // http ok
           _needRefresh = false;
 
-          var button = new Container(
-            child: IconButton(
-              icon: (_needRefresh
-                  ? Icon(Icons.done)
-                  : Icon(Icons.refresh)),
-              color: Colors.yellow[500],
-              onPressed: _toggleNeedFresh,
-            ),
+          var rv = renderTickers(snapshot.data);
+          return Hero(
+            tag: 'detail',
+            child: rv,
           );
-
-          return renderTickers(snapshot.data, button);
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }
