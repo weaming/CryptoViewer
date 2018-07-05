@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'marketcap.dart';
 import 'data_process.dart';
 import 'background.dart';
@@ -50,7 +49,7 @@ class BaseLayout extends StatelessWidget {
 class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var tickerList = buildTickersList();
+    var tickerList = TickerList();
     var listings = Text('');
 
     return TabBarView(
@@ -62,21 +61,17 @@ class MainLayout extends StatelessWidget {
   }
 }
 
-Widget buildTickersList() {
-  return FutureBuilder<dynamic>(
-    future: fetchTop(300),
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return TickersList(snapshot.data);
-      } else if (snapshot.hasError) {
-        return Text("${snapshot.error}");
-      }
-
-      return Text('');
-    },
-  );
+class TickerList extends StatefulWidget {
+  @override
+  _TickerListState createState() => _TickerListState();
 }
 
+class _TickerListState extends State<TickerList> {
+  @override
+  Widget build(BuildContext context) {
+    return buildTickerList();
+  }
+}
 
 class TickersList extends StatelessWidget {
   final data;
@@ -89,6 +84,22 @@ class TickersList extends StatelessWidget {
     var rv = renderTickers(tickers);
     return rv;
   }
+}
+
+// build two list
+Widget buildTickerList() {
+  return FutureBuilder<dynamic>(
+    future: fetchTop(300),
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        return TickersList(snapshot.data);
+      } else if (snapshot.hasError) {
+        return Text("${snapshot.error}");
+      }
+
+      return Text('');
+    },
+  );
 }
 
 Widget buildListings() {

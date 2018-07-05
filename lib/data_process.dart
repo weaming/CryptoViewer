@@ -49,57 +49,95 @@ String _getLogoUrl(item, size) {
 Widget renderTickers(List<dynamic> top) {
   top.sort((a, b) => a['rank'].compareTo(b['rank']));
 
-  return new GridView.builder(
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-    itemCount: top.length,
-    itemBuilder: (context, index) {
-      final item = top[index];
-      var quotes = item['quotes'];
-
-      var p1 = "\$ ${quotes['USD']['price'].toStringAsFixed(2)}";
-      var p3 = "¥ ${quotes['CNY']['price'].toStringAsFixed(2)}";
-
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(
-              builder: (context) => renderItem(item, context),
-          ));
-        },
-        child: Card(
-          margin: EdgeInsets.all(6.0),
-          child: Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.fill,
-                  colorFilter: new ColorFilter.mode(Colors.white.withOpacity(0.1), BlendMode.dstATop),
-                  image: NetworkImage(_getLogoUrl(item, 128)),
-                )
-            ),
-            child: ListTile(
-              title: Row(
-                children: <Widget>[
-                  Text(
-                    '${item["rank"]} ${item["symbol"]}',
-                    style: biggerFont,
-                  ),
-                ],
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(p1),
-                  Text(p3),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    },
-  );
+  return SimpleList(top);
 }
 
-Widget renderItem(dynamic item, BuildContext context) {
+class SimpleList extends StatefulWidget {
+  final top;
+
+  SimpleList(this.top);
+
+  @override
+  ListState createState() => ListState(top);
+}
+
+class ListState extends State<SimpleList> {
+  var _choice;
+  final top;
+
+  ListState(this.top);
+
+  _clearChoice() {
+    setState(() {
+      _choice = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_choice == null) {
+      var grid = GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        itemCount: top.length,
+        itemBuilder: (context, index) {
+          final item = top[index];
+          var quotes = item['quotes'];
+
+          var p1 = "\$ ${quotes['USD']['price'].toStringAsFixed(2)}";
+          var p3 = "¥ ${quotes['CNY']['price'].toStringAsFixed(2)}";
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _choice = index;
+              });
+            },
+            child: Card(
+              margin: EdgeInsets.all(6.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                      fit: BoxFit.fill,
+                      colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.1), BlendMode.dstATop),
+                      image: NetworkImage(_getLogoUrl(item, 128)),
+                    )
+                ),
+                child: ListTile(
+                  title: Row(
+                    children: <Widget>[
+                      Text(
+                        '${item["symbol"]}',
+                        style: biggerFont,
+                      ),
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text('R ${item["rank"]}'),
+                      Text(p1),
+                      Text(p3),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      return Hero(
+        tag: 'item',
+        child: grid,
+      );
+    } else {
+      var item = top[_choice];
+      return renderItem(item, context, _clearChoice);
+    }
+  }
+}
+
+Widget renderItem(dynamic item, BuildContext context, callback) {
   Widget _renderCell(String name) {
     var quotes = item['quotes'];
 
@@ -117,63 +155,63 @@ Widget renderItem(dynamic item, BuildContext context) {
           )
       );
     } else if (name=='Price') {
-      return new ListTile(
-        title: new Text(
+      return ListTile(
+        title: Text(
           '\$ ${quotes['USD']['price']}\n¥ ${quotes['CNY']['price'].toStringAsFixed(2)}',
         ),
       );
     } else if (name=='Supply') {
-      return new ListTile(
-        title: new Text('Supply'),
-        subtitle: new Row(
-          children: ['Circulating', 'Total', 'Max'].map((t) => new Container(
+      return ListTile(
+        title: Text('Supply'),
+        subtitle: Row(
+          children: ['Circulating', 'Total', 'Max'].map((t) => Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-            child: new Text('$t\n${item['${t.toLowerCase()}_supply']}'),
+            child: Text('$t\n${item['${t.toLowerCase()}_supply']}'),
           )).toList(),
         ),
       );
     } else if (name=='Change') {
-      return new ListTile(
+      return ListTile(
         title: const Text('Change'),
-        subtitle: new Row(
-          children: ['1h', '24h', '7d'].map((t) => new Container(
+        subtitle: Row(
+          children: ['1h', '24h', '7d'].map((t) => Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-            child: new Text('$t\n${quotes['USD']['percent_change_$t']}'),
+            child: Text('$t\n${quotes['USD']['percent_change_$t']}'),
           )).toList(),
         ),
       );
     } else if (name=='Volume') {
-      return new ListTile(
+      return ListTile(
         title: const Text('Volume 24h'),
-        subtitle: new Row(
-          children: ['usd', 'cny'].map((t) => new Container(
+        subtitle: Row(
+          children: ['usd', 'cny'].map((t) => Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-            child: new Text('${t.toUpperCase()}\n${quotes[t.toUpperCase()]['volume_24h'].toStringAsFixed(2)}'),
+            child: Text('${t.toUpperCase()}\n${quotes[t.toUpperCase()]['volume_24h'].toStringAsFixed(2)}'),
           )).toList(),
         ),
       );
     } else if (name=='Cap') {
-      return new ListTile(
+      return ListTile(
         title: const Text('Cap'),
-        subtitle: new Row(
-          children: ['usd', 'cny'].map((t) => new Container(
+        subtitle: Row(
+          children: ['usd', 'cny'].map((t) => Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-            child: new Text('${t.toUpperCase()}\n${quotes[t.toUpperCase()]['market_cap']}'),
+            child: Text('${t.toUpperCase()}\n${quotes[t.toUpperCase()]['market_cap']}'),
           )).toList(),
         ),
       );
     } else if (name=='Update') {
-      var now = new DateTime.now().millisecondsSinceEpoch / 1000;
+      var now = DateTime.now().millisecondsSinceEpoch / 1000;
       var ts = item['last_updated'];
 
-      return new ListTile(
+      return ListTile(
         title: const Text('Updated'),
-        subtitle: new Text('${(now - ts).toStringAsFixed(0)} seconds ago'),
+        subtitle: Text('${(now - ts).toStringAsFixed(0)} seconds ago'),
       );
     }
 
-    return new ListTile(
-      title: new Text('BUG'),
+    return ListTile(
+      title: Text('BUG'),
     );
   }
 
@@ -184,14 +222,17 @@ Widget renderItem(dynamic item, BuildContext context) {
         tiles: categories.map((x) => _renderCell(x)).toList(),
       ).toList(),
     ),
-    margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+    margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
   );
 
-  return GestureDetector(
+  return Hero(
+    tag: 'item',
+    child: GestureDetector(
       onTap: () {
-        Navigator.pop(context);
+        callback();
       },
       child: rv,
+    ),
   );
 }
 
