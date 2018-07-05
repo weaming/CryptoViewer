@@ -218,12 +218,22 @@ Widget renderItem(dynamic item, BuildContext context, callback) {
       );
     } else if (name=='Change') {
       return ListTile(
-        title: const Text('Change'),
+        title: const Text('Change %'),
         subtitle: Row(
-          children: ['1h', '24h', '7d'].map((t) => Container(
-            margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-            child: Text('$t\n${quotes['USD']['percent_change_$t']}'),
-          )).toList(),
+          children: ['1h', '24h', '7d'].map((t) {
+            var price = quotes['USD']['percent_change_$t'];
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+              child: Row(
+                children: <Widget>[
+                  Text('$t'),
+                  Text('$price', style: TextStyle(
+                    color: price > 0 ? Colors.green : Colors.red,
+                  ),),
+                ],
+              )
+            );
+          }).toList(),
         ),
       );
     } else if (name=='Volume') {
