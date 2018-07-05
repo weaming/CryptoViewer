@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 
 const API_BASE = 'https://api.coinmarketcap.com';
-const API_TICKER = API_BASE + '/v1/ticker/';
+const API_TICKER = API_BASE + '/v2/ticker/';
 const API_LISTINGS = API_BASE + '/v2/listings/';
 
 
@@ -37,10 +37,15 @@ class Coin {
   }
 }
 
+var listingsCache;
+
 Future<List<Coin>> fetchListings() async {
   const url = API_LISTINGS;
   var response = await fetch(url);
-  return response['data'].map<Coin>((json) => Coin.fromJson(json)).toList();
+  if (listingsCache == null) {
+    listingsCache = response['data'].map<Coin>((json) => Coin.fromJson(json)).toList();
+  }
+  return listingsCache;
 }
 
 int findIDBySymbol(List<Coin> coins, String symbol) {

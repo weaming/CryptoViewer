@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'marketcap.dart';
-import 'background.dart';
 
 final biggerFont = const TextStyle(
-  fontSize: 18.0,
+  fontSize: 16.0,
   fontWeight:  FontWeight.bold,
 );
 
@@ -42,20 +40,21 @@ const categories = [
 ];
 
 
-Widget renderTickers(List<dynamic> json) {
-  var top = json[0];
-  var listings = json[1];
+Widget renderTickers(List<dynamic> top) {
+  top.sort((a, b) => a['rank'].compareTo(b['rank']));
 
   return new GridView.builder(
     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
     itemCount: top.length,
     itemBuilder: (context, index) {
       final item = top[index];
-      var p1 = "\$ ${double.parse(item['price_usd']).toStringAsFixed(2)}";
-      var p2 = "฿ ${double.parse(item['price_btc']).toStringAsFixed(6)}";
-      var p3 = "¥ ${double.parse(item['price_cny']).toStringAsFixed(2)}";
-      var id = findIDBySymbol(listings, item['symbol']);
+      var quotes = item['quotes'];
+
+      var p1 = "\$ ${quotes['USD']['price'].toStringAsFixed(2)}";
+      var p3 = "¥ ${quotes['CNY']['price'].toStringAsFixed(2)}";
+      var id = item['id'];
       var logoUrl = 'https://s2.coinmarketcap.com/static/img/coins/128x128/$id.png';
+      print(logoUrl);
 
       return GestureDetector(
         onTap: () {
@@ -89,7 +88,6 @@ Widget renderTickers(List<dynamic> json) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(p1),
-                  Text(p2),
                   Text(p3),
                 ],
               ),
@@ -103,6 +101,8 @@ Widget renderTickers(List<dynamic> json) {
 
 Widget renderItem(dynamic item, BuildContext context) {
   Widget _renderCell(String name) {
+    var quotes = item['quotes'];
+
     if (name=='Symbol') {
       return new ListTile(
         title: new Text(
@@ -113,14 +113,14 @@ Widget renderItem(dynamic item, BuildContext context) {
     } else if (name=='Price') {
       return new ListTile(
         title: new Text(
-          '\$ ${item['price_usd']}\n฿ ${item['price_btc']}\n¥ ${item['price_cny']}',
+          '\$ ${quotes['USD']['price']}\n¥ ${quotes['CNY']['price']}',
         ),
       );
     } else if (name=='Supply') {
       return new ListTile(
         title: new Text('Supply'),
         subtitle: new Row(
-          children: ['Available', 'Total', 'Max'].map((t) => new Container(
+          children: ['Circulating', 'Total', 'Max'].map((t) => new Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
             child: new Text('$t\n${item['${t.toLowerCase()}_supply']}'),
           )).toList(),
@@ -132,17 +132,17 @@ Widget renderItem(dynamic item, BuildContext context) {
         subtitle: new Row(
           children: ['1h', '24h', '7d'].map((t) => new Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-            child: new Text('$t\n${item['percent_change_$t']}'),
+            child: new Text('$t\n${quotes['USD']['percent_change_$t']}'),
           )).toList(),
         ),
       );
-    } else if (name=='Volume') {
+    } else if (name=='Volume 24h') {
       return new ListTile(
         title: const Text('Volume'),
         subtitle: new Row(
           children: ['usd', 'cny'].map((t) => new Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-            child: new Text('${t.toUpperCase()}\n${item['24h_volume_$t']}'),
+            child: new Text('${t.toUpperCase()}\n${quotes[t.toUpperCase()]['volume_24h']}'),
           )).toList(),
         ),
       );
@@ -152,23 +152,23 @@ Widget renderItem(dynamic item, BuildContext context) {
         subtitle: new Row(
           children: ['usd', 'cny'].map((t) => new Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-            child: new Text('${t.toUpperCase()}\n${item['market_cap_$t']}'),
+            child: new Text('${t.toUpperCase()}\n${quotes[t.toUpperCase()]['market_cap']}'),
           )).toList(),
         ),
       );
     } else if (name=='Update') {
       var now = new DateTime.now().millisecondsSinceEpoch / 1000;
-      var ts = int.parse(item['last_updated']);
+      var ts = item['last_updated'];
 
       return new ListTile(
         title: const Text('Updated'),
         subtitle: new Text('${(now - ts).toStringAsFixed(0)} seconds ago'),
       );
-    } else {
-      return new ListTile(
-        title: new Text('BUG'),
-      );
     }
+
+    return new ListTile(
+      title: new Text('BUG'),
+    );
   }
 
   var rv = Card(

@@ -48,34 +48,33 @@ class BaseLayout extends StatelessWidget {
 }
 
 class MainLayout extends StatelessWidget {
-  Future<dynamic> _fetchInfoAndListings(n) async {
-    var top = await fetchTop(n);
-    var listings = await fetchListings();
-    return [top, listings];
-  }
-
   @override
   Widget build(BuildContext context) {
-    var tickerList = FutureBuilder<dynamic>(
-      future: _fetchInfoAndListings(300),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return TickersList(snapshot.data);
-        } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
-        }
-
-        return Text('');
-      },
-    );
+    var tickerList = buildTickersList();
+    var listings = Text('');
 
     return TabBarView(
       children: <Widget>[
         tickerList,
-        Text(''),
+        listings,
       ],
     );
   }
+}
+
+Widget buildTickersList() {
+  return FutureBuilder<dynamic>(
+    future: fetchTop(300),
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        return TickersList(snapshot.data);
+      } else if (snapshot.hasError) {
+        return Text("${snapshot.error}");
+      }
+
+      return Text('');
+    },
+  );
 }
 
 
@@ -86,7 +85,8 @@ class TickersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var rv = renderTickers(data);
+    var tickers = data['data'].values.map((v) => v).toList();
+    var rv = renderTickers(tickers);
     return Hero(
       tag: 'detail',
       child: rv,
@@ -100,6 +100,7 @@ Widget buildListings() {
     builder: (context, snapshot) {
       if (snapshot.hasData) {
         var data = snapshot.data;
+
         return GridView(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
           children: data.map<Widget>((Coin item) => Card(
