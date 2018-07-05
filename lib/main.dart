@@ -49,7 +49,7 @@ class BaseLayout extends StatelessWidget {
 class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var tickerList = TickerList();
+    var tickerList = buildTickerList();
     var listings = Text('');
 
     return TabBarView(
@@ -58,18 +58,6 @@ class MainLayout extends StatelessWidget {
         listings,
       ],
     );
-  }
-}
-
-class TickerList extends StatefulWidget {
-  @override
-  _TickerListState createState() => _TickerListState();
-}
-
-class _TickerListState extends State<TickerList> {
-  @override
-  Widget build(BuildContext context) {
-    return buildTickerList();
   }
 }
 
