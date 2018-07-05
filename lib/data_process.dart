@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 final biggerFont = const TextStyle(
   fontSize: 16.0,
@@ -62,43 +63,58 @@ class SimpleList extends StatefulWidget {
 }
 
 class ListState extends State<SimpleList> {
-  var _choice;
   final top;
+  var _fullScreenIndex;
+  var _selectedIndex = 0;
 
   ListState(this.top);
 
   _clearChoice() {
     setState(() {
-      _choice = null;
+      _fullScreenIndex = null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_choice == null) {
+    if (_fullScreenIndex == null) {
       var grid = GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         itemCount: top.length,
         itemBuilder: (context, index) {
           final item = top[index];
+          final selectedItem = top[_selectedIndex];
           var quotes = item['quotes'];
 
           var p1 = "\$ ${quotes['USD']['price'].toStringAsFixed(2)}";
           var p3 = "¥ ${quotes['CNY']['price'].toStringAsFixed(2)}";
+          var exchangeRate = (quotes['USD']['price'] / selectedItem['quotes']['USD']['price']);
+          if (exchangeRate > 9999) {
+            exchangeRate = exchangeRate.toStringAsFixed(2);
+          } else {
+            exchangeRate = exchangeRate.toStringAsFixed(4);
+          }
+
+          var filterColor, opacity;
+          if (index == _selectedIndex) {
+            filterColor = Colors.blue;
+            opacity = 0.5;
+          } else {
+            filterColor = Colors.white;
+            opacity = 0.1;
+          }
 
           return GestureDetector(
-            onTap: () {
-              setState(() {
-                _choice = index;
-              });
-            },
             child: Card(
               margin: EdgeInsets.all(6.0),
               child: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
                       fit: BoxFit.fill,
-                      colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.1), BlendMode.dstATop),
+                      colorFilter: ColorFilter.mode(
+                          filterColor.withOpacity(opacity),
+                          BlendMode.dstATop
+                      ),
                       image: NetworkImage(_getLogoUrl(item, 128)),
                     )
                 ),
@@ -115,13 +131,25 @@ class ListState extends State<SimpleList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text('R ${item["rank"]}'),
+                      Text('C \$${(quotes["USD"]["market_cap"] / pow(10, 6)).toStringAsFixed(0)}B'),
                       Text(p1),
                       Text(p3),
+                      Text('E $exchangeRate'),
                     ],
                   ),
                 ),
               ),
             ),
+            onTap: () {
+              setState(() {
+                _fullScreenIndex = index;
+              });
+            },
+            onDoubleTap: () {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
           );
         },
       );
@@ -131,7 +159,7 @@ class ListState extends State<SimpleList> {
         child: grid,
       );
     } else {
-      var item = top[_choice];
+      var item = top[_fullScreenIndex];
       return renderItem(item, context, _clearChoice);
     }
   }

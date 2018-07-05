@@ -89,7 +89,7 @@ class TickersList extends StatelessWidget {
 // build two list
 Widget buildTickerList() {
   return FutureBuilder<dynamic>(
-    future: fetchTop(300),
+    future: fetchTop(99),
     builder: (context, snapshot) {
       if (snapshot.hasData) {
         return TickersList(snapshot.data);
