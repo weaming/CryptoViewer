@@ -39,6 +39,12 @@ const categories = [
   'Update',
 ];
 
+String _getLogoUrl(item, size) {
+  var id = item['id'];
+  var logoUrl = 'https://s2.coinmarketcap.com/static/img/coins/${size}x$size/$id.png';
+  return logoUrl;
+}
+
 
 Widget renderTickers(List<dynamic> top) {
   top.sort((a, b) => a['rank'].compareTo(b['rank']));
@@ -52,17 +58,11 @@ Widget renderTickers(List<dynamic> top) {
 
       var p1 = "\$ ${quotes['USD']['price'].toStringAsFixed(2)}";
       var p3 = "¥ ${quotes['CNY']['price'].toStringAsFixed(2)}";
-      var id = item['id'];
-      var logoUrl = 'https://s2.coinmarketcap.com/static/img/coins/128x128/$id.png';
-      print(logoUrl);
 
       return GestureDetector(
         onTap: () {
           Navigator.push(context, MaterialPageRoute(
-              builder: (context) => Hero(
-                tag: "detail",
-                child: renderItem(item, context),
-              )
+              builder: (context) => renderItem(item, context),
           ));
         },
         child: Card(
@@ -71,8 +71,8 @@ Widget renderTickers(List<dynamic> top) {
             decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.fill,
-                  colorFilter: new ColorFilter.mode(Colors.white.withOpacity(0.2), BlendMode.dstATop),
-                  image: NetworkImage(logoUrl),
+                  colorFilter: new ColorFilter.mode(Colors.white.withOpacity(0.1), BlendMode.dstATop),
+                  image: NetworkImage(_getLogoUrl(item, 128)),
                 )
             ),
             child: ListTile(
@@ -104,16 +104,22 @@ Widget renderItem(dynamic item, BuildContext context) {
     var quotes = item['quotes'];
 
     if (name=='Symbol') {
-      return new ListTile(
-        title: new Text(
-          '${item['rank']} ${item['symbol']}',
-          style: biggerFont,
-        ),
+      return ListTile(
+          title: Row(
+            children: <Widget>[
+              Text(
+                '${item['rank']} ${item['symbol']}',
+                style: biggerFont,
+              ),
+              Image.network(_getLogoUrl(item, 64)),
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          )
       );
     } else if (name=='Price') {
       return new ListTile(
         title: new Text(
-          '\$ ${quotes['USD']['price']}\n¥ ${quotes['CNY']['price']}',
+          '\$ ${quotes['USD']['price']}\n¥ ${quotes['CNY']['price'].toStringAsFixed(2)}',
         ),
       );
     } else if (name=='Supply') {
@@ -136,13 +142,13 @@ Widget renderItem(dynamic item, BuildContext context) {
           )).toList(),
         ),
       );
-    } else if (name=='Volume 24h') {
+    } else if (name=='Volume') {
       return new ListTile(
-        title: const Text('Volume'),
+        title: const Text('Volume 24h'),
         subtitle: new Row(
           children: ['usd', 'cny'].map((t) => new Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-            child: new Text('${t.toUpperCase()}\n${quotes[t.toUpperCase()]['volume_24h']}'),
+            child: new Text('${t.toUpperCase()}\n${quotes[t.toUpperCase()]['volume_24h'].toStringAsFixed(2)}'),
           )).toList(),
         ),
       );

@@ -87,10 +87,7 @@ class TickersList extends StatelessWidget {
   Widget build(BuildContext context) {
     var tickers = data['data'].values.map((v) => v).toList();
     var rv = renderTickers(tickers);
-    return Hero(
-      tag: 'detail',
-      child: rv,
-    );
+    return rv;
   }
 }
 
