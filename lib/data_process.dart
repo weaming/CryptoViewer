@@ -79,7 +79,7 @@ Widget renderTickers(List<dynamic> top) {
               title: Row(
                 children: <Widget>[
                   Text(
-                    '${item['rank']} ${item['symbol']}',
+                    '${item["rank"]} ${item["symbol"]}',
                     style: biggerFont,
                   ),
                 ],
@@ -108,7 +108,7 @@ Widget renderItem(dynamic item, BuildContext context) {
           title: Row(
             children: <Widget>[
               Text(
-                '${item['rank']} ${item['symbol']}',
+                '${item['rank']} ${item['symbol']} ${item["name"]}',
                 style: biggerFont,
               ),
               Image.network(_getLogoUrl(item, 64)),
