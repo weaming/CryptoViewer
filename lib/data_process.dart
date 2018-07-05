@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 final biggerFont = const TextStyle(
   fontSize: 16.0,
@@ -66,6 +69,7 @@ class ListState extends State<SimpleList> {
   final top;
   var _fullScreenIndex;
   var _selectedIndex = 0;
+  final _selectedIndexKey = 'ticker:selected_index';
 
   ListState(this.top);
 
@@ -73,6 +77,22 @@ class ListState extends State<SimpleList> {
     setState(() {
       _fullScreenIndex = null;
     });
+  }
+
+  _saveState() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    await prefs.setInt(_selectedIndexKey, _selectedIndex);
+  }
+
+  _loadState() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    _selectedIndex = prefs.getInt(_selectedIndexKey) ?? _selectedIndex;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadState();
   }
 
   @override
@@ -148,6 +168,7 @@ class ListState extends State<SimpleList> {
             onDoubleTap: () {
               setState(() {
                 _selectedIndex = index;
+                _saveState();
               });
             },
           );
