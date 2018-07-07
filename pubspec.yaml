@@ -63,6 +63,6 @@ flutter:
 
 flutter_icons:
   android: true
-  ios: "Bitcoin-Icon"
+  ios: true
   image_path: "images/icon/bitcoin-512.png"
 
