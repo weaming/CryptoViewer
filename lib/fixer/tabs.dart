@@ -196,7 +196,7 @@ class _RatesFormState extends State<RatesForm> {
                   color:
                   currency == selectedCurrency
                       ? Colors.deepPurple
-                      : Colors.white),
+                      : Colors.black87),
             ),
             Chip(
               padding: EdgeInsets.all(10.0),

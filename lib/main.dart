@@ -39,7 +39,14 @@ class BaseLayout extends StatelessWidget {
     return Scaffold(
       body: Container(
           decoration: BoxDecoration(
-            image: buildBackground("images/black_power.jpg")
+            image: DecorationImage(
+              image: AssetImage("images/black_power.jpg"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                  Colors.deepPurple.withOpacity(0.8),
+                  BlendMode.dstATop
+              ),
+            )
           ),
           child: MainLayout(),
       ),

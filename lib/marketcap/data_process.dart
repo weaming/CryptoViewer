@@ -147,7 +147,7 @@ class _SimpleListState extends State<SimpleList> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('R ${item["rank"]}'),
+                      Text('# ${item["rank"]}'),
                       Text('C \$${(quotes["USD"]["market_cap"] / pow(10, 6)).toStringAsFixed(0)}B'),
                       Text(p1),
                       Text(p3),
