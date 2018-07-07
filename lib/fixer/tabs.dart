@@ -72,7 +72,7 @@ class RateListState extends State<RateList> {
   }
 }
 
-Widget renderRates(Map rates, String selectedCurrency, {double amount=100.0}) {
+Widget renderRates(Map rates, String selectedCurrency) {
   return RatesForm(rates, selectedCurrency);
 }
 
@@ -89,7 +89,7 @@ class RatesForm extends StatefulWidget {
 class _RatesFormState extends State<RatesForm> {
   final rates;
   var selectedCurrency;
-  var amount = 100.0;
+  var amount = 1.0;
 
   _RatesFormState(this.rates, this.selectedCurrency);
 
