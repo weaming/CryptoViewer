@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'global.dart';
+import '../global.dart';
 
 
 final biggerFont = const TextStyle(
