@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'background.dart';
 import './marketcap/tabs.dart';
+import './fixer/tabs.dart';
 
 void main() => runApp(App());
 
@@ -48,13 +49,13 @@ class BaseLayout extends StatelessWidget {
 class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var tickerList = TickersList();
-    var listings = Text('');
+    var tickerList = TickerList();
+    var rateList = RateList();
 
     return TabBarView(
       children: <Widget>[
         tickerList,
-        listings,
+        rateList,
       ],
     );
   }

@@ -4,15 +4,13 @@ import './api.dart';
 import './data_process.dart';
 import '../cache.dart';
 
-class TickersList extends StatefulWidget {
+class TickerList extends StatefulWidget {
   @override
-  TickersListState createState() => TickersListState();
+  TickerListState createState() => TickerListState();
 }
 
-class TickersListState extends State<TickersList> {
+class TickerListState extends State<TickerList> {
   var data;
-
-  TickersListState();
 
   @override
   void initState() {
@@ -20,25 +18,40 @@ class TickersListState extends State<TickersList> {
     _getData();
   }
 
-  Future<Null> _getData() async {
-    httpGetCache("tickerList", () => fetchTop(99), timeout: 30, withState: true)
-        .then((rv) {
-      setState(() {
-        data = rv[0];
-      });
+  _afterHttpFinish() {
+    Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Update success',
+          style: TextStyle(
+            color: Colors.green,
+          ),
+        )
+    ));
+  }
 
-      var useCache = rv[1];
-      if (!useCache) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text(
-              'Update success',
-              style: TextStyle(
-                color: Colors.green,
-              ),
-            )
-        ));
-      }
-    });
+  Future<Null> _getData({force=false}) async {
+    if (force) {
+      fetchTop(99)
+          .then((rv) {
+        setState(() {
+          data = rv;
+        });
+
+        _afterHttpFinish();
+      });
+    } else {
+      httpGetCache("tickerList", () => fetchTop(99), timeout: 30, withState: true)
+          .then((rv) {
+        setState(() {
+          data = rv[0];
+        });
+
+        var useCache = rv[1];
+        if (!useCache) {
+          _afterHttpFinish();
+        }
+      });
+    }
   }
 
   @override
@@ -54,7 +67,7 @@ class TickersListState extends State<TickersList> {
 
     return RefreshIndicator(
       child: rv,
-      onRefresh: _getData,
+      onRefresh: () => _getData(force: true),
     );
   }
 }
