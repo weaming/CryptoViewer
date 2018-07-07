@@ -61,16 +61,16 @@ class SimpleList extends StatefulWidget {
   SimpleList(this.top);
 
   @override
-  ListState createState() => ListState(top);
+  _SimpleListState createState() => _SimpleListState(top);
 }
 
-class ListState extends State<SimpleList> {
-  final top;
+class _SimpleListState extends State<SimpleList> {
+  var top;
   var _fullScreenIndex;
   var _selectedIndex = 0;
   final _selectedIndexKey = 'ticker:list:selected_index';
 
-  ListState(this.top);
+  _SimpleListState(this.top);
 
   _clearChoice() {
     setState(() {

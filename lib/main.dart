@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'marketcap.dart';
 import 'data_process.dart';
 import 'background.dart';
+import 'cache.dart';
 
 void main() => runApp(App());
 
@@ -49,7 +51,7 @@ class BaseLayout extends StatelessWidget {
 class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var tickerList = buildTickerList();
+    var tickerList = TickersList();
     var listings = Text('');
 
     return TabBarView(
@@ -61,35 +63,62 @@ class MainLayout extends StatelessWidget {
   }
 }
 
-class TickersList extends StatelessWidget {
-  final data;
+class TickersList extends StatefulWidget {
+  @override
+  TickersListState createState() => TickersListState();
+}
 
-  TickersList(this.data);
+class TickersListState extends State<TickersList> {
+  var data;
+
+  TickersListState();
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
+  }
+
+  Future<Null> _getData() async {
+    httpGetCache("tickerList", () => fetchTop(99), timeout: 30, withState: true)
+        .then((rv) {
+      setState(() {
+        data = rv[0];
+      });
+
+      var useCache = rv[1];
+      if (!useCache) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text(
+              'Update success',
+              style: TextStyle(
+                color: Colors.green,
+              ),
+            )
+        ));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (data == null) {
+      return Center(
+          child: CircularProgressIndicator()
+      );
+    }
+
     var tickers = data['data'].values.map((v) => v).toList();
     var rv = renderTickers(tickers);
-    return rv;
+
+    return RefreshIndicator(
+      child: rv,
+      onRefresh: _getData,
+    );
   }
 }
 
 // build two list
-Widget buildTickerList() {
-  return FutureBuilder<dynamic>(
-    future: fetchTop(99),
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return TickersList(snapshot.data);
-      } else if (snapshot.hasError) {
-        return Text("${snapshot.error}");
-      }
-
-      return Text('');
-    },
-  );
-}
-
 Widget buildListings() {
   return FutureBuilder<dynamic>(
     future: fetchListings(),
