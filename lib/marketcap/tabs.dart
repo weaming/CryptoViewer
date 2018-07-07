@@ -23,7 +23,7 @@ class TickerListState extends State<TickerList> {
         content: Text(
           'Update success',
           style: TextStyle(
-            color: Colors.green,
+            color: Colors.deepPurple,
           ),
         )
     ));

@@ -24,7 +24,7 @@ class RateListState extends State<RateList> {
         content: Text(
           'Update success',
           style: TextStyle(
-            color: Colors.green,
+            color: Colors.deepPurple,
           ),
         )
     ));
@@ -195,8 +195,8 @@ class _RatesFormState extends State<RatesForm> {
                   fontWeight: FontWeight.bold,
                   color:
                   currency == selectedCurrency
-                      ? Colors.deepOrange
-                      : Colors.blue),
+                      ? Colors.deepPurple
+                      : Colors.white),
             ),
             Chip(
               padding: EdgeInsets.all(10.0),

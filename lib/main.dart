@@ -12,7 +12,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'CoinMarketCap',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple,
       ),
       home: DefaultTabController(
         length: 2,
@@ -39,7 +39,7 @@ class BaseLayout extends StatelessWidget {
     return Scaffold(
       body: Container(
           decoration: BoxDecoration(
-            image: buildBackground("images/girl.jpg")
+            image: buildBackground("images/black_power.jpg")
           ),
           child: MainLayout(),
       ),

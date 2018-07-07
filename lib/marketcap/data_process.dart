@@ -114,7 +114,7 @@ class _SimpleListState extends State<SimpleList> {
 
           var filterColor, opacity;
           if (index == _selectedIndex) {
-            filterColor = Colors.blue;
+            filterColor = Colors.deepPurple;
             opacity = 0.5;
           } else {
             filterColor = Colors.white;
