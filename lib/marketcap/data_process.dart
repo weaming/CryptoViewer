@@ -157,12 +157,12 @@ class _SimpleListState extends State<SimpleList> {
                 ),
               ),
             ),
-            onLongPress: () {
+            onDoubleTap: () {
               setState(() {
                 _fullScreenIndex = index;
               });
             },
-            onTap: () {
+            onLongPress: () {
               setState(() {
                 _selectedIndex = index;
               });
