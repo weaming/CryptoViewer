@@ -65,5 +65,4 @@ flutter_icons:
   android: true
   ios: "Bitcoin-Icon"
   image_path: "images/icon/bitcoin-512.png"
-  adaptive_icon_background: "#FFFAFAFA"
 
