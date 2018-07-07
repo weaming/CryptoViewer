@@ -40,7 +40,7 @@ class TickerListState extends State<TickerList> {
         _afterHttpFinish();
       });
     } else {
-      httpGetCache("tickerList", () => fetchTop(99), timeout: 30, withState: true)
+      httpGetCache("tickerList", () => fetchTop(99), timeout: 30, returnState: true)
           .then((rv) {
         setState(() {
           data = rv[0];

@@ -157,7 +157,7 @@ class _SimpleListState extends State<SimpleList> {
                 ),
               ),
             ),
-            onDoubleTap: () {
+            onTap: () {
               setState(() {
                 _fullScreenIndex = index;
               });

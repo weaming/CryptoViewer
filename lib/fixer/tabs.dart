@@ -41,7 +41,7 @@ class RateListState extends State<RateList> {
         _afterHttpFinish();
       });
     } else {
-      httpGetCache("rates", fetchRates, timeout: 30, withState: true)
+      httpGetCache("rates", fetchRates, timeout: 300, returnState: true)
           .then((rv) {
         setState(() {
           data = rv[0];
@@ -168,6 +168,7 @@ class _RatesFormState extends State<RatesForm> {
 
         // tap to switch base currency
         var onTap;
+        var showChangeAmount;
         if (currency != selectedCurrency) {
           onTap = () {
             setState(() {
@@ -175,7 +176,7 @@ class _RatesFormState extends State<RatesForm> {
             });
           };
         } else {
-          onTap = () {
+          showChangeAmount = () {
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -220,7 +221,8 @@ class _RatesFormState extends State<RatesForm> {
             ),
             color: Colors.white70,
           ),
-          onDoubleTap: onTap,
+          onTap: onTap,
+          onLongPress: showChangeAmount,
         );
       },
     );
